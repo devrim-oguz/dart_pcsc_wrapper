@@ -1,0 +1,1 @@
+//ffi.DynamicLibrary.open("winscard.dll");

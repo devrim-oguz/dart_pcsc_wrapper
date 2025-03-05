@@ -1,0 +1,6 @@
+name: WinscardMacOS
+description: Mac OS bindings for pcsc lib
+output: '../lib/bindings/generated/winscard_macos.dart'
+headers:
+  entry-points:
+    - 'headers/macos/winscard.h'
