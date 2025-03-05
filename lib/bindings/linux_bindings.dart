@@ -359,13 +359,13 @@ class LinuxBindings implements IPCSCBindings {
     return result;
   }
 
-  Uint8List _asUint8List(ffi.Pointer<ffi.Uint8> p, int length) {
+  /*Uint8List _asUint8List(ffi.Pointer<ffi.Uint8> p, int length) {
     Uint8List result = Uint8List(length);
     for (int i = 0; i < length; i++) {
       result[i] = p[i];
     }
     return result;
-  }
+  }*/
 
   ffi.Pointer<ffi.Char> _allocateNativeString(String inputString) {
     return inputString.toNativeUtf8(allocator: calloc).cast();
