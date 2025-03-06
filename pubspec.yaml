@@ -1,7 +1,11 @@
 name: pcsc_wrapper
 description: "Dart PCSC Wrapper Library"
 repository: https://github.com/devrim-oguz/dart_pcsc_wrapper
-version: 1.1.0
+version: 1.1.1
+
+platforms:
+  linux:
+  macos:
 
 environment:
   sdk: ^3.7.0

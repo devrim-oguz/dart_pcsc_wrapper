@@ -10,3 +10,9 @@
 ## 1.1.0
 
 * Updated Dart SDK version (For Initial Release)
+
+
+
+## 1.1.1
+
+* Changed supported platforms
