@@ -20,4 +20,4 @@
 
 ## 1.2.0
 
-* Added Windows support
+* Added Windows support and updated ffigen and dart versions
