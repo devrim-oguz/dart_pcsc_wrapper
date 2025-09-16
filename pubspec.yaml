@@ -6,6 +6,7 @@ version: 1.2.0
 platforms:
   linux:
   macos:
+  windows:
 
 environment:
   sdk: ^3.8.0
