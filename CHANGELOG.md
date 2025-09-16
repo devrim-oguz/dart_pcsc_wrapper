@@ -21,3 +21,7 @@
 ## 1.2.0
 
 * Added Windows support and updated ffigen and dart versions
+
+## 1.3.0
+
+* Added Windows to the pubspec platforms listing
