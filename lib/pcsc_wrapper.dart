@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:pcsc_wrapper/bindings/binding_interface.dart';
 import 'package:pcsc_wrapper/bindings/linux_bindings.dart';
 import 'package:pcsc_wrapper/bindings/macos_bindings.dart';
+import 'package:pcsc_wrapper/bindings/windows_bindings.dart';
 import 'package:pcsc_wrapper/common/pcsc_structs.dart';
 import 'package:tuple/tuple.dart';
 
@@ -23,7 +24,7 @@ class PCSCWrapper {
       _bindings = MacOSBindings();
     }
     else if( Platform.isWindows ) {
-      throw Exception("Windows platform is not supported by this library");
+      _bindings = WindowsBindings();
     }
     else {
       throw Exception("Unsupported operating system");

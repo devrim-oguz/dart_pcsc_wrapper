@@ -16,3 +16,8 @@
 ## 1.1.1
 
 * Changed supported platforms
+
+
+## 1.2.0
+
+* Added Windows support

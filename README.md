@@ -2,14 +2,14 @@
 
 ## Overview
 
-pcsc_wrapper is a Dart FFI (Foreign Function Interface) wrapper for the PC/SC (Personal Computer/Smart Card) interface, enabling developers to interact with smart card readers and smart cards using Dart on Linux platforms.
+pcsc_wrapper is a Dart FFI (Foreign Function Interface) wrapper for the PC/SC (Personal Computer/Smart Card) interface, enabling developers to interact with smart card readers and smart cards using Dart on Linux, macOS, and Windows. At this time only the Linux implementation has been exercised in real environments; macOS and Windows implementations are present but not yet validated.
 
 ## Platform Support
 
-⚠️ **Platform Limitations**:
-- Currently only supports Linux and MacOS
-- Only the Linux implementation is tested
-- Windows support is not present
+⚠️ **Status**:
+- Implementations included for: Linux, macOS, Windows
+- Tested in real environments: Linux only
+- macOS & Windows: implemented but not yet manually tested/validated
 
 ## Features
 
