@@ -5,6 +5,7 @@ version: 3.0.0
 
 platforms:
   linux:
+  macos:
 
 environment:
   sdk: ^3.10.3
