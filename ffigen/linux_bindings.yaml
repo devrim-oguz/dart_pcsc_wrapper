@@ -1,6 +1,0 @@
-name: WinscardLinux
-description: Linux bindings for pcsc lib
-output: '../lib/bindings/generated/winscard_linux.dart'
-headers:
-  entry-points:
-    - 'headers/linux/winscard.h'

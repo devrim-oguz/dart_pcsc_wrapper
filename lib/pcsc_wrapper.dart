@@ -2,12 +2,13 @@ library pcsc_wrapper;
 
 import 'dart:io';
 
+import 'package:pcsc_wrapper/common/pcsc_types.dart';
 import 'package:pcsc_wrapper/common/pcsc_bindings_base.dart';
 import 'package:pcsc_wrapper/bindings/linux_bindings.dart';
-import 'package:pcsc_wrapper/common/pcsc_types.dart';
+import 'package:pcsc_wrapper/bindings/macos_bindings.dart';
 
-export 'common/pcsc_types.dart';
 export 'common/pcsc_constants.dart';
+export 'common/pcsc_types.dart';
 
 class PCSCWrapper {
   late PcscBindings _bindings;
@@ -16,10 +17,10 @@ class PCSCWrapper {
     if (Platform.isLinux) {
       _bindings = LinuxBindings();
     }
-    /*else if (Platform.isMacOS) {
+    else if (Platform.isMacOS) {
       _bindings = MacOSBindings();
     }
-    else if (Platform.isWindows) {
+    /*else if (Platform.isWindows) {
       _bindings = WindowsBindings();
     }*/
     else {

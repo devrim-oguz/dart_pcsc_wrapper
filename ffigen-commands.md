@@ -3,15 +3,15 @@
 
 ## For Linux:
 ```
-    flutter pub run ffigen --config ffigen/linux_bindings.yaml
+    flutter pub run ffigen --config ffigen/configs/generate_linux.yaml
 ```
 
 ## For MacOS
 ```
-    flutter pub run ffigen --config ffigen/macos_bindings.yaml
+    flutter pub run ffigen --config ffigen/configs/generate_macos.yaml
 ```
 
 ## For Windows
 ```
-    flutter pub run ffigen --config ffigen/windows_bindings.yaml
+    flutter pub run ffigen --config ffigen/configs/generate_windows.yaml
 ```

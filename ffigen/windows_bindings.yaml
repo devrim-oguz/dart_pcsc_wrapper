@@ -1,6 +1,0 @@
-name: WinscardWindows
-description: Windows bindings for pcsc lib
-output: '../lib/bindings/generated/winscard_windows.dart'
-headers:
-  entry-points:
-    - 'headers/windows/winscard.h'
