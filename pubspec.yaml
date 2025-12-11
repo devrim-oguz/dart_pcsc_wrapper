@@ -7,11 +7,11 @@ platforms:
   linux:
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.10.3
 
 dependencies:
   ffi: ^2.1.4
   tuple: ^2.0.2
 
 dev_dependencies:
-  ffigen: ^19.1.0
+  ffigen: ^20.1.1

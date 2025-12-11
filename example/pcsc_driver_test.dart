@@ -7,11 +7,22 @@ Future<void> main() async {
   SCardContext? context;
   try {
     // Typically, SCARD_SCOPE_SYSTEM is defined as 2.
-    context = await pcsc.establishContext(2);
+    final establishResult = await pcsc.establishContext(2);
+    if (!establishResult.result.isSuccess) {
+      print("Failed to establish context: ${establishResult.result.message}");
+      return;
+    }
+    context = establishResult.context;
     print("Context established: ${context.hContext}");
 
     // List the available readers for the established context.
-    final readers = await pcsc.listReaders(context.hContext);
+    final readersResult = await pcsc.listReaders(context.hContext);
+    if (!readersResult.result.isSuccess) {
+      print("Failed to list readers: ${readersResult.result.message}");
+      return;
+    }
+    
+    final readers = readersResult.readers;
     if (readers.isEmpty) {
       print("No readers found.");
     } else {
@@ -33,6 +44,7 @@ Future<void> main() async {
         print("Error releasing context: $e");
       }
     }
+    pcsc.dispose();
   }
 }
 
@@ -54,11 +66,16 @@ Future<void> monitorReaderEvents(
   while (true) {
     try {
       // Wait indefinitely using the SCARD_INFINITE constant.
-      List<SCardReaderState> states = await pcsc.getStatusChange(
+      final statusResult = await pcsc.getStatusChange(
           context.hContext, PcscConstants.SCARD_INFINITE, [state]);
 
+      if (!statusResult.result.isSuccess) {
+        print("getStatusChange failed: ${statusResult.result.message}");
+        break;
+      }
+
       // getStatusChange returns an updated state.
-      SCardReaderState newState = states[0];
+      SCardReaderState newState = statusResult.readerStates[0];
 
       // Check if the state has changed.
       if (newState.dwEventState != state.dwCurrentState) {
