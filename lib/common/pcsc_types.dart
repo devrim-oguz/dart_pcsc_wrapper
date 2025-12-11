@@ -1,6 +1,4 @@
 import 'dart:ffi';
-
-import 'package:ffi/ffi.dart';
 import 'package:pcsc_wrapper/common/pcsc_constants.dart';
 
 //Function Return Types
