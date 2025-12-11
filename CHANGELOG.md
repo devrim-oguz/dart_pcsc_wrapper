@@ -33,3 +33,7 @@
 ## 2.0.0
 
 * Moved library calls to isolate to prevent blocking calls. Dropped incomplete MacOS and Windows support
+
+## 3.0.0
+
+* Changed the behavior of the library classes from throwing errors to returning the PCSC result instead. Added preliminary MacOS support.

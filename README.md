@@ -2,25 +2,30 @@
 
 ## Overview
 
-pcsc_wrapper is a Dart FFI (Foreign Function Interface) wrapper for the PC/SC (Personal Computer/Smart Card) interface, enabling developers to interact with smart card readers and smart cards using Dart on Linux.
+`pcsc_wrapper` is a Dart FFI (Foreign Function Interface) wrapper for the PC/SC (Personal Computer/Smart Card) API. It allows you to interact with smart card readers and smart cards directly from your Dart applications.
 
 ## Platform Support
 
-⚠️ **Status**:
-- Implementations included for: Linux
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **Linux** | ✅ Available | Implementation provided. |
+| **macOS** | ⚠️ Experimental | Implementation provided. |
+| **Windows** | ❌ Not Supported | No implementation available at this time. |
 
 ## Features
 
-- Native bindings to the PC/SC (winscard) interface
-- Provides a Dart-friendly API for smart card operations
-- Enables low-level smart card reader and card interactions
-- Lightweight and efficient through Dart's FFI mechanism
+- **Pure Dart FFI Implementation**: Uses `dart:ffi` to bind directly to system libraries.
+- Native bindings to the PC/SC (winscard) interface.
+- A Dart-friendly API for common smart card operations.
+- Low-level access to readers and cards via Dart's FFI mechanism.
+- Lightweight and efficient.
 
 ## Prerequisites
 
 - Dart SDK
-- PC/SC middleware installed on your system
-- libpcsclite-dev (on Linux)
+- PC/SC middleware installed on your system:
+  - **Linux**: `libpcsclite1` and `libpcsclite-dev`
+  - **macOS**: PCSC framework (usually built-in)
 
 ## Installation
 
@@ -37,8 +42,4 @@ This project is licensed under the BSD 3-Clause License. See the LICENSE file fo
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Disclaimer
-
-This library is provided "as-is" with no guarantee of compatibility or support. Users should thoroughly test in their specific environments.
+Contributions are welcome! Whether it's testing on macOS, adding Windows support, or fixing bugs, please feel free to submit a Pull Request.
