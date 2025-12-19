@@ -23,22 +23,22 @@ abstract class PcscCommand<T> {
 
 /// Command factory interface - platform bindings implement this
 abstract class PcscCommandFactory {
-  PcscCommand<EstablishContextResult> establishContext(int dwScope);
+  PcscCommand<PcscResult<SCardContext>> establishContext(int dwScope);
   PcscCommand<SCardResult> releaseContext(int hContext);
   PcscCommand<SCardResult> isValidContext(int hContext);
-  PcscCommand<ConnectResult> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols);
-  PcscCommand<ReconnectResult> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization);
+  PcscCommand<PcscResult<SCardHandle>> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols);
+  PcscCommand<PcscResult<SCardHandle>> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization);
   PcscCommand<SCardResult> disconnect(int hCard, int dwDisposition);
   PcscCommand<SCardResult> beginTransaction(int hCard);
   PcscCommand<SCardResult> endTransaction(int hCard, int dwDisposition);
-  PcscCommand<StatusResult> status(int hCard);
-  PcscCommand<GetStatusChangeResult> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates);
-  PcscCommand<ControlResult> control(int hCard, int dwControlCode, List<int> pbSendBuffer);
-  PcscCommand<TransmitResult> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer);
-  PcscCommand<ListReaderGroupsResult> listReaderGroups(int hContext);
-  PcscCommand<ListReadersResult> listReaders(int hContext);
+  PcscCommand<PcscResult<SCardStatus>> status(int hCard);
+  PcscCommand<PcscResult<List<SCardReaderState>>> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates);
+  PcscCommand<PcscResult<List<int>>> control(int hCard, int dwControlCode, List<int> pbSendBuffer);
+  PcscCommand<PcscResult<List<int>>> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer);
+  PcscCommand<PcscResult<List<String>>> listReaderGroups(int hContext);
+  PcscCommand<PcscResult<List<String>>> listReaders(int hContext);
   PcscCommand<SCardResult> cancel(int hContext);
-  PcscCommand<GetAttribResult> getAttrib(int hCard, int dwAttrId);
+  PcscCommand<PcscResult<List<int>>> getAttrib(int hCard, int dwAttrId);
   PcscCommand<SCardResult> setAttrib(int hCard, int dwAttrId, List<int> pbAttr);
 }
 
@@ -99,7 +99,7 @@ abstract class PcscBindings {
   void dispose() => _executor.dispose();
 
   // Public API
-  Future<EstablishContextResult> establishContext(int dwScope) =>
+  Future<PcscResult<SCardContext>> establishContext(int dwScope) =>
       _executor.execute(_factory.establishContext(dwScope));
 
   Future<SCardResult> releaseContext(int hContext) =>
@@ -108,10 +108,10 @@ abstract class PcscBindings {
   Future<SCardResult> isValidContext(int hContext) =>
       _executor.execute(_factory.isValidContext(hContext));
 
-  Future<ConnectResult> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
+  Future<PcscResult<SCardHandle>> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
       _executor.execute(_factory.connect(hContext, szReader, dwShareMode, dwPreferredProtocols));
 
-  Future<ReconnectResult> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
+  Future<PcscResult<SCardHandle>> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
       _executor.execute(_factory.reconnect(hCard, dwShareMode, dwPreferredProtocols, dwInitialization));
 
   Future<SCardResult> disconnect(int hCard, int dwDisposition) =>
@@ -123,28 +123,28 @@ abstract class PcscBindings {
   Future<SCardResult> endTransaction(int hCard, int dwDisposition) =>
       _executor.execute(_factory.endTransaction(hCard, dwDisposition));
 
-  Future<StatusResult> status(int hCard) =>
+  Future<PcscResult<SCardStatus>> status(int hCard) =>
       _executor.execute(_factory.status(hCard));
 
-  Future<GetStatusChangeResult> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates) =>
+  Future<PcscResult<List<SCardReaderState>>> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates) =>
       _executor.execute(_factory.getStatusChange(hContext, dwTimeout, rgReaderStates));
 
-  Future<ControlResult> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
+  Future<PcscResult<List<int>>> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
       _executor.execute(_factory.control(hCard, dwControlCode, pbSendBuffer));
 
-  Future<TransmitResult> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
+  Future<PcscResult<List<int>>> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
       _executor.execute(_factory.transmit(hCard, pioSendPci, pbSendBuffer));
 
-  Future<ListReaderGroupsResult> listReaderGroups(int hContext) =>
+  Future<PcscResult<List<String>>> listReaderGroups(int hContext) =>
       _executor.execute(_factory.listReaderGroups(hContext));
 
-  Future<ListReadersResult> listReaders(int hContext) =>
+  Future<PcscResult<List<String>>> listReaders(int hContext) =>
       _executor.execute(_factory.listReaders(hContext));
 
   Future<SCardResult> cancel(int hContext) =>
       _executor.execute(_factory.cancel(hContext));
 
-  Future<GetAttribResult> getAttrib(int hCard, int dwAttrId) =>
+  Future<PcscResult<List<int>>> getAttrib(int hCard, int dwAttrId) =>
       _executor.execute(_factory.getAttrib(hCard, dwAttrId));
 
   Future<SCardResult> setAttrib(int hCard, int dwAttrId, List<int> pbAttr) =>

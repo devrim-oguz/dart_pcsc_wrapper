@@ -30,7 +30,7 @@ class PCSCWrapper {
 
   void dispose() => _bindings.dispose();
 
-  Future<EstablishContextResult> establishContext(int scope) =>
+  Future<PcscResult<SCardContext>> establishContext(int scope) =>
       _bindings.establishContext(scope);
 
   Future<SCardResult> releaseContext(SCardContext context) =>
@@ -39,13 +39,13 @@ class PCSCWrapper {
   Future<SCardResult> isValidContext(int hContext) =>
       _bindings.isValidContext(hContext);
 
-  Future<ListReadersResult> listReaders(int hContext) =>
+  Future<PcscResult<List<String>>> listReaders(int hContext) =>
       _bindings.listReaders(hContext);
 
-  Future<ConnectResult> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
+  Future<PcscResult<SCardHandle>> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
       _bindings.connect(hContext, szReader, dwShareMode, dwPreferredProtocols);
 
-  Future<ReconnectResult> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
+  Future<PcscResult<SCardHandle>> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
       _bindings.reconnect(hCard, dwShareMode, dwPreferredProtocols, dwInitialization);
 
   Future<SCardResult> disconnect(int hCard, int dwDisposition) =>
@@ -57,25 +57,25 @@ class PCSCWrapper {
   Future<SCardResult> endTransaction(int hCard, int dwDisposition) =>
       _bindings.endTransaction(hCard, dwDisposition);
 
-  Future<StatusResult> status(int hCard) =>
+  Future<PcscResult<SCardStatus>> status(int hCard) =>
       _bindings.status(hCard);
 
-  Future<GetStatusChangeResult> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates) =>
+  Future<PcscResult<List<SCardReaderState>>> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> rgReaderStates) =>
       _bindings.getStatusChange(hContext, dwTimeout, rgReaderStates);
 
-  Future<ControlResult> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
+  Future<PcscResult<List<int>>> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
       _bindings.control(hCard, dwControlCode, pbSendBuffer);
 
-  Future<TransmitResult> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
+  Future<PcscResult<List<int>>> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
       _bindings.transmit(hCard, pioSendPci, pbSendBuffer);
 
-  Future<ListReaderGroupsResult> listReaderGroups(int hContext) =>
+  Future<PcscResult<List<String>>> listReaderGroups(int hContext) =>
       _bindings.listReaderGroups(hContext);
 
   Future<SCardResult> cancel(int hContext) =>
       _bindings.cancel(hContext);
 
-  Future<GetAttribResult> getAttrib(int hCard, int dwAttrId) =>
+  Future<PcscResult<List<int>>> getAttrib(int hCard, int dwAttrId) =>
       _bindings.getAttrib(hCard, dwAttrId);
 
   Future<SCardResult> setAttrib(int hCard, int dwAttrId, List<int> pbAttr) =>

@@ -37,3 +37,7 @@
 ## 3.0.0
 
 * Changed the behavior of the library classes from throwing errors to returning the PCSC result instead. Added preliminary MacOS support.
+
+## 4.0.0
+
+* Changed the library function return types from individual types to generic types

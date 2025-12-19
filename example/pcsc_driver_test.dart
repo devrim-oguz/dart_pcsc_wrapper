@@ -12,7 +12,7 @@ Future<void> main() async {
       print("Failed to establish context: ${establishResult.result.message}");
       return;
     }
-    context = establishResult.context;
+    context = establishResult.value;
     print("Context established: ${context.hContext}");
 
     // List the available readers for the established context.
@@ -22,7 +22,7 @@ Future<void> main() async {
       return;
     }
     
-    final readers = readersResult.readers;
+    final readers = readersResult.value;
     if (readers.isEmpty) {
       print("No readers found.");
     } else {
@@ -75,7 +75,7 @@ Future<void> monitorReaderEvents(
       }
 
       // getStatusChange returns an updated state.
-      SCardReaderState newState = statusResult.readerStates[0];
+      SCardReaderState newState = statusResult.value[0];
 
       // Check if the state has changed.
       if (newState.dwEventState != state.dwCurrentState) {

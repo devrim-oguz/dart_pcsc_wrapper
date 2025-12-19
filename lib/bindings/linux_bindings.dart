@@ -1,3 +1,5 @@
+//Library Path: "libpcsclite.so.1"
+
 import 'dart:ffi' as ffi;
 import 'dart:isolate';
 
@@ -62,7 +64,7 @@ void _linuxIsolateEntry(SendPort sendPort) {
 
 class LinuxCommandFactory implements PcscCommandFactory {
   @override
-  PcscCommand<EstablishContextResult> establishContext(int dwScope) =>
+  PcscCommand<PcscResult<SCardContext>> establishContext(int dwScope) =>
       _EstablishContext(dwScope);
 
   @override
@@ -74,11 +76,11 @@ class LinuxCommandFactory implements PcscCommandFactory {
       _IsValidContext(hContext);
 
   @override
-  PcscCommand<ConnectResult> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
+  PcscCommand<PcscResult<SCardHandle>> connect(int hContext, String szReader, int dwShareMode, int dwPreferredProtocols) =>
       _Connect(hContext, szReader, dwShareMode, dwPreferredProtocols);
 
   @override
-  PcscCommand<ReconnectResult> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
+  PcscCommand<PcscResult<SCardHandle>> reconnect(int hCard, int dwShareMode, int dwPreferredProtocols, int dwInitialization) =>
       _Reconnect(hCard, dwShareMode, dwPreferredProtocols, dwInitialization);
 
   @override
@@ -94,27 +96,27 @@ class LinuxCommandFactory implements PcscCommandFactory {
       _EndTransaction(hCard, dwDisposition);
 
   @override
-  PcscCommand<StatusResult> status(int hCard) =>
+  PcscCommand<PcscResult<SCardStatus>> status(int hCard) =>
       _Status(hCard);
 
   @override
-  PcscCommand<GetStatusChangeResult> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> states) =>
+  PcscCommand<PcscResult<List<SCardReaderState>>> getStatusChange(int hContext, int dwTimeout, List<SCardReaderState> states) =>
       _GetStatusChange(hContext, dwTimeout, states);
 
   @override
-  PcscCommand<ControlResult> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
+  PcscCommand<PcscResult<List<int>>> control(int hCard, int dwControlCode, List<int> pbSendBuffer) =>
       _Control(hCard, dwControlCode, pbSendBuffer);
 
   @override
-  PcscCommand<TransmitResult> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
+  PcscCommand<PcscResult<List<int>>> transmit(int hCard, int pioSendPci, List<int> pbSendBuffer) =>
       _Transmit(hCard, pioSendPci, pbSendBuffer);
 
   @override
-  PcscCommand<ListReaderGroupsResult> listReaderGroups(int hContext) =>
+  PcscCommand<PcscResult<List<String>>> listReaderGroups(int hContext) =>
       _ListReaderGroups(hContext);
 
   @override
-  PcscCommand<ListReadersResult> listReaders(int hContext) =>
+  PcscCommand<PcscResult<List<String>>> listReaders(int hContext) =>
       _ListReaders(hContext);
 
   @override
@@ -122,7 +124,7 @@ class LinuxCommandFactory implements PcscCommandFactory {
       _Cancel(hContext);
 
   @override
-  PcscCommand<GetAttribResult> getAttrib(int hCard, int dwAttrId) =>
+  PcscCommand<PcscResult<List<int>>> getAttrib(int hCard, int dwAttrId) =>
       _GetAttrib(hCard, dwAttrId);
 
   @override
@@ -134,17 +136,17 @@ class LinuxCommandFactory implements PcscCommandFactory {
 
 LinuxPcscContext _getContext(PcscContext ctx) => ctx as LinuxPcscContext;
 
-class _EstablishContext extends PcscCommand<EstablishContextResult> {
+class _EstablishContext extends PcscCommand<PcscResult<SCardContext>> {
   final int dwScope;
   _EstablishContext(this.dwScope);
 
   @override
-  EstablishContextResult execute(PcscContext ctx) {
+  PcscResult<SCardContext> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final phContext = calloc<SCARDCONTEXT>();
     try {
       final result = context.winscard.SCardEstablishContext(dwScope, context.nullptr, context.nullptr, phContext);
-      return EstablishContextResult(SCardResult(result), SCardContext(phContext.value));
+      return PcscResult(SCardResult(result), SCardContext(phContext.value));
     } finally {
       calloc.free(phContext);
     }
@@ -169,7 +171,7 @@ class _IsValidContext extends PcscCommand<SCardResult> {
       SCardResult(_getContext(ctx).winscard.SCardIsValidContext(hContext));
 }
 
-class _Connect extends PcscCommand<ConnectResult> {
+class _Connect extends PcscCommand<PcscResult<SCardHandle>> {
   final int hContext;
   final String szReader;
   final int dwShareMode;
@@ -178,14 +180,14 @@ class _Connect extends PcscCommand<ConnectResult> {
   _Connect(this.hContext, this.szReader, this.dwShareMode, this.dwPreferredProtocols);
 
   @override
-  ConnectResult execute(PcscContext ctx) {
+  PcscResult<SCardHandle> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final readerNamePtr = NativeUtils.allocateString(szReader);
     final cardHandlePtr = calloc<SCARDHANDLE>();
     final protocolPtr = calloc<DWORD>();
     try {
       final result = context.winscard.SCardConnect(hContext, readerNamePtr, dwShareMode, dwPreferredProtocols, cardHandlePtr, protocolPtr);
-      return ConnectResult(SCardResult(result), SCardHandle(cardHandlePtr.value, protocolPtr.value));
+      return PcscResult(SCardResult(result), SCardHandle(cardHandlePtr.value, protocolPtr.value));
     } finally {
       calloc.free(readerNamePtr);
       calloc.free(cardHandlePtr);
@@ -194,7 +196,7 @@ class _Connect extends PcscCommand<ConnectResult> {
   }
 }
 
-class _Reconnect extends PcscCommand<ReconnectResult> {
+class _Reconnect extends PcscCommand<PcscResult<SCardHandle>> {
   final int hCard;
   final int dwShareMode;
   final int dwPreferredProtocols;
@@ -203,12 +205,12 @@ class _Reconnect extends PcscCommand<ReconnectResult> {
   _Reconnect(this.hCard, this.dwShareMode, this.dwPreferredProtocols, this.dwInitialization);
 
   @override
-  ReconnectResult execute(PcscContext ctx) {
+  PcscResult<SCardHandle> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final protocolPtr = calloc<DWORD>();
     try {
       final result = context.winscard.SCardReconnect(hCard, dwShareMode, dwPreferredProtocols, dwInitialization, protocolPtr);
-      return ReconnectResult(SCardResult(result), SCardHandle(hCard, protocolPtr.value));
+      return PcscResult(SCardResult(result), SCardHandle(hCard, protocolPtr.value));
     } finally {
       calloc.free(protocolPtr);
     }
@@ -244,12 +246,12 @@ class _EndTransaction extends PcscCommand<SCardResult> {
       SCardResult(_getContext(ctx).winscard.SCardEndTransaction(hCard, dwDisposition));
 }
 
-class _Status extends PcscCommand<StatusResult> {
+class _Status extends PcscCommand<PcscResult<SCardStatus>> {
   final int hCard;
   _Status(this.hCard);
 
   @override
-  StatusResult execute(PcscContext ctx) {
+  PcscResult<SCardStatus> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final statePtr = calloc<DWORD>();
     final protocolPtr = calloc<DWORD>();
@@ -261,9 +263,9 @@ class _Status extends PcscCommand<StatusResult> {
     try {
       final retValue = context.winscard.SCardStatus(hCard, readerNameBuffer, readerNameLenPtr, statePtr, protocolPtr, atrBuffer, atrLenPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return StatusResult(result, SCardStatus("", 0, 0, []));
+      if (!result.isSuccess) return PcscResult(result, SCardStatus("", 0, 0, []));
 
-      return StatusResult(result, SCardStatus(
+      return PcscResult(result, SCardStatus(
         NativeUtils.convertString(readerNameBuffer),
         statePtr.value,
         protocolPtr.value,
@@ -280,7 +282,7 @@ class _Status extends PcscCommand<StatusResult> {
   }
 }
 
-class _GetStatusChange extends PcscCommand<GetStatusChangeResult> {
+class _GetStatusChange extends PcscCommand<PcscResult<List<SCardReaderState>>> {
   final int hContext;
   final int dwTimeout;
   final List<SCardReaderState> states;
@@ -288,7 +290,7 @@ class _GetStatusChange extends PcscCommand<GetStatusChangeResult> {
   _GetStatusChange(this.hContext, this.dwTimeout, this.states);
 
   @override
-  GetStatusChangeResult execute(PcscContext ctx) {
+  PcscResult<List<SCardReaderState>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final nativeNames = states.map((state) => NativeUtils.allocateString(state.szReader)).toList();
     final nativeStates = calloc<SCARD_READERSTATE>(states.length);
@@ -307,7 +309,7 @@ class _GetStatusChange extends PcscCommand<GetStatusChangeResult> {
       final retValue = context.winscard.SCardGetStatusChange(hContext, dwTimeout, nativeStates, states.length);
       final result = SCardResult(retValue);
 
-      if (!result.isSuccess) return GetStatusChangeResult(result, []);
+      if (!result.isSuccess) return PcscResult(result, []);
 
       final updatedStates = <SCardReaderState>[];
       for (int i = 0; i < states.length; i++) {
@@ -323,7 +325,7 @@ class _GetStatusChange extends PcscCommand<GetStatusChangeResult> {
           atrBytes
         ));
       }
-      return GetStatusChangeResult(result, updatedStates);
+      return PcscResult(result, updatedStates);
     } finally {
       for (var namePtr in nativeNames) calloc.free(namePtr);
       calloc.free(nativeStates);
@@ -331,7 +333,7 @@ class _GetStatusChange extends PcscCommand<GetStatusChangeResult> {
   }
 }
 
-class _Control extends PcscCommand<ControlResult> {
+class _Control extends PcscCommand<PcscResult<List<int>>> {
   final int hCard;
   final int dwControlCode;
   final List<int> pbSendBuffer;
@@ -339,7 +341,7 @@ class _Control extends PcscCommand<ControlResult> {
   _Control(this.hCard, this.dwControlCode, this.pbSendBuffer);
 
   @override
-  ControlResult execute(PcscContext ctx) {
+  PcscResult<List<int>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final sendBuffer = NativeUtils.allocateBytes(pbSendBuffer);
     final receiveBuffer = calloc<ffi.Uint8>(MAX_BUFFER_SIZE);
@@ -348,8 +350,8 @@ class _Control extends PcscCommand<ControlResult> {
     try {
       final retValue = context.winscard.SCardControl(hCard, dwControlCode, sendBuffer.cast<ffi.Void>(), pbSendBuffer.length, receiveBuffer.cast<ffi.Void>(), MAX_BUFFER_SIZE, bytesReturnedPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return ControlResult(result, []);
-      return ControlResult(result, NativeUtils.convertBytes(receiveBuffer, bytesReturnedPtr.value));
+      if (!result.isSuccess) return PcscResult(result, []);
+      return PcscResult(result, NativeUtils.convertBytes(receiveBuffer, bytesReturnedPtr.value));
     } finally {
       calloc.free(sendBuffer);
       calloc.free(receiveBuffer);
@@ -358,7 +360,7 @@ class _Control extends PcscCommand<ControlResult> {
   }
 }
 
-class _Transmit extends PcscCommand<TransmitResult> {
+class _Transmit extends PcscCommand<PcscResult<List<int>>> {
   final int hCard;
   final int pioSendPci;
   final List<int> pbSendBuffer;
@@ -366,7 +368,7 @@ class _Transmit extends PcscCommand<TransmitResult> {
   _Transmit(this.hCard, this.pioSendPci, this.pbSendBuffer);
 
   @override
-  TransmitResult execute(PcscContext ctx) {
+  PcscResult<List<int>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final sendBuffer = NativeUtils.allocateBytes(pbSendBuffer);
     final receiveBuffer = calloc<BYTE>(MAX_BUFFER_SIZE);
@@ -380,8 +382,8 @@ class _Transmit extends PcscCommand<TransmitResult> {
     try {
       final retValue = context.winscard.SCardTransmit(hCard, protocolControlInfo, sendBuffer.cast<BYTE>(), pbSendBuffer.length, context.nullptr.cast(), receiveBuffer, bytesReturnedPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return TransmitResult(result, []);
-      return TransmitResult(result, NativeUtils.convertBytes(receiveBuffer.cast<ffi.Uint8>(), bytesReturnedPtr.value));
+      if (!result.isSuccess) return PcscResult(result, []);
+      return PcscResult(result, NativeUtils.convertBytes(receiveBuffer.cast<ffi.Uint8>(), bytesReturnedPtr.value));
     } finally {
       calloc.free(sendBuffer);
       calloc.free(receiveBuffer);
@@ -390,20 +392,20 @@ class _Transmit extends PcscCommand<TransmitResult> {
   }
 }
 
-class _ListReaderGroups extends PcscCommand<ListReaderGroupsResult> {
+class _ListReaderGroups extends PcscCommand<PcscResult<List<String>>> {
   final int hContext;
   _ListReaderGroups(this.hContext);
 
   @override
-  ListReaderGroupsResult execute(PcscContext ctx) {
+  PcscResult<List<String>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final bufferLenPtr = calloc<DWORD>()..value = MAX_BUFFER_SIZE;
     final multiStringBuffer = calloc<ffi.Char>(MAX_BUFFER_SIZE);
     try {
       final retValue = context.winscard.SCardListReaderGroups(hContext, multiStringBuffer, bufferLenPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return ListReaderGroupsResult(result, []);
-      return ListReaderGroupsResult(result, NativeUtils.multiStringToDart(multiStringBuffer.cast<Utf8>()).toList());
+      if (!result.isSuccess) return PcscResult(result, []);
+      return PcscResult(result, NativeUtils.multiStringToDart(multiStringBuffer.cast<Utf8>()).toList());
     } finally {
       calloc.free(multiStringBuffer);
       calloc.free(bufferLenPtr);
@@ -411,20 +413,20 @@ class _ListReaderGroups extends PcscCommand<ListReaderGroupsResult> {
   }
 }
 
-class _ListReaders extends PcscCommand<ListReadersResult> {
+class _ListReaders extends PcscCommand<PcscResult<List<String>>> {
   final int hContext;
   _ListReaders(this.hContext);
 
   @override
-  ListReadersResult execute(PcscContext ctx) {
+  PcscResult<List<String>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final bufferLenPtr = calloc<DWORD>()..value = MAX_BUFFER_SIZE;
     final multiStringBuffer = calloc<ffi.Char>(MAX_BUFFER_SIZE);
     try {
       final retValue = context.winscard.SCardListReaders(hContext, context.nullptr, multiStringBuffer, bufferLenPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return ListReadersResult(result, []);
-      return ListReadersResult(result, NativeUtils.multiStringToDart(multiStringBuffer.cast<Utf8>()).toList());
+      if (!result.isSuccess) return PcscResult(result, []);
+      return PcscResult(result, NativeUtils.multiStringToDart(multiStringBuffer.cast<Utf8>()).toList());
     } finally {
       calloc.free(multiStringBuffer);
       calloc.free(bufferLenPtr);
@@ -441,21 +443,21 @@ class _Cancel extends PcscCommand<SCardResult> {
       SCardResult(_getContext(ctx).winscard.SCardCancel(hContext));
 }
 
-class _GetAttrib extends PcscCommand<GetAttribResult> {
+class _GetAttrib extends PcscCommand<PcscResult<List<int>>> {
   final int hCard;
   final int dwAttrId;
   _GetAttrib(this.hCard, this.dwAttrId);
 
   @override
-  GetAttribResult execute(PcscContext ctx) {
+  PcscResult<List<int>> execute(PcscContext ctx) {
     final context = _getContext(ctx);
     final bufferLenPtr = calloc<DWORD>()..value = MAX_BUFFER_SIZE;
     final attrBuffer = calloc<BYTE>(MAX_BUFFER_SIZE);
     try {
       final retValue = context.winscard.SCardGetAttrib(hCard, dwAttrId, attrBuffer, bufferLenPtr);
       final result = SCardResult(retValue);
-      if (!result.isSuccess) return GetAttribResult(result, []);
-      return GetAttribResult(result, NativeUtils.convertBytes(attrBuffer.cast<ffi.Uint8>(), bufferLenPtr.value));
+      if (!result.isSuccess) return PcscResult(result, []);
+      return PcscResult(result, NativeUtils.convertBytes(attrBuffer.cast<ffi.Uint8>(), bufferLenPtr.value));
     } finally {
       calloc.free(attrBuffer);
       calloc.free(bufferLenPtr);

@@ -1,1 +1,1 @@
-//static final _pcsc = ffi.DynamicLibrary.open("winscard.dll");
+//Library Path: "winscard.dll"
