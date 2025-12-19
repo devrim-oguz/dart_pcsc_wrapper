@@ -37,3 +37,7 @@
 ## 4.0.0
 
 * Changed the library function return types from individual types to generic types
+
+## 4.0.1
+
+* Increased dart minor version
